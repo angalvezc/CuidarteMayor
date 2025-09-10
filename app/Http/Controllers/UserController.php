@@ -2,59 +2,64 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use App\Models\User;
+use App\Models\Role;
 
 class UserController extends Controller
 {
     public function index()
     {
-        return response()->json(User::with('role')->get(), 200);
+        $users = User::with('role')->get();
+        return view('users.index', compact('users'));
+    }
+
+    public function create()
+    {
+        $roles = Role::all();
+        return view('users.create', compact('roles'));
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|string|email|unique:users',
-            'password' => 'required|string|min:6',
-            'role_id'  => 'nullable|exists:roles,id'
-        ]);
+        $user = new User();
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password = bcrypt($request->password);
+        $user->phone = $request->phone;
+        $user->role_id = $request->role_id;
+        $user->save();
 
-        $validated['password'] = Hash::make($validated['password']);
-
-        $user = User::create($validated);
-
-        return response()->json($user, 201);
+        return redirect()->route('users.index');
     }
 
-    public function show(User $user)
+    public function edit(string $id)
     {
-        return response()->json($user->load('role'), 200);
+        $user = User::findOrFail($id);
+        $roles = Role::all();
+        return view('users.edit', compact('user', 'roles'));
     }
 
-    public function update(Request $request, User $user)
+    public function update(Request $request, string $id)
     {
-        $validated = $request->validate([
-            'name'     => 'sometimes|string|max:255',
-            'email'    => 'sometimes|string|email|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:6',
-            'role_id'  => 'nullable|exists:roles,id'
-        ]);
-
-        if (isset($validated['password'])) {
-            $validated['password'] = Hash::make($validated['password']);
+        $user = User::findOrFail($id);
+        $user->name = $request->name;
+        $user->email = $request->email;
+        if ($request->password) {
+            $user->password = bcrypt($request->password);
         }
+        $user->phone = $request->phone;
+        $user->role_id = $request->role_id;
+        $user->save();
 
-        $user->update($validated);
-
-        return response()->json($user, 200);
+        return redirect()->route('users.index');
     }
 
-    public function destroy(User $user)
+    public function destroy(string $id)
     {
+        $user = User::findOrFail($id);
         $user->delete();
-        return response()->json(null, 204);
+
+        return redirect()->route('users.index');
     }
 }

@@ -2,52 +2,65 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Medication;
 use Illuminate\Http\Request;
+use App\Models\Medication;
+use App\Models\Resident;
+use App\Models\User;
 
 class MedicationController extends Controller
 {
     public function index()
     {
-        return response()->json(Medication::with(['resident','responsible'])->get(), 200);
+        $medications = Medication::with(['resident', 'responsible'])->get();
+        return view('medications.index', compact('medications'));
+    }
+
+    public function create()
+    {
+        $residents = Resident::all();
+        $users = User::all();
+        return view('medications.create', compact('residents', 'users'));
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name'          => 'required|string|max:255',
-            'dose'          => 'required|string|max:255',
-            'resident_id'   => 'required|exists:residents,id',
-            'responsible_id'=> 'required|exists:users,id',
-        ]);
+        $medication = new Medication();
+        $medication->resident_id = $request->resident_id;
+        $medication->name = $request->name;
+        $medication->dosage = $request->dosage;
+        $medication->frequency = $request->frequency;
+        $medication->responsible_id = $request->responsible_id;
+        $medication->save();
 
-        $medication = Medication::create($validated);
-
-        return response()->json($medication, 201);
+        return redirect()->route('medications.index');
     }
 
-    public function show(Medication $medication)
+    public function edit(string $id)
     {
-        return response()->json($medication->load(['resident','responsible']), 200);
+        $medication = Medication::findOrFail($id);
+        $residents = Resident::all();
+        $users = User::all();
+        return view('medications.edit', compact('medication', 'residents', 'users'));
     }
 
-    public function update(Request $request, Medication $medication)
+    public function update(Request $request, string $id)
     {
-        $validated = $request->validate([
-            'name'          => 'sometimes|string|max:255',
-            'dose'          => 'sometimes|string|max:255',
-            'resident_id'   => 'sometimes|exists:residents,id',
-            'responsible_id'=> 'sometimes|exists:users,id',
-        ]);
+        $medication = Medication::findOrFail($id);
+        $medication->resident_id = $request->resident_id;
+        $medication->name = $request->name;
+        $medication->dosage = $request->dosage;
+        $medication->frequency = $request->frequency;
+        $medication->responsible_id = $request->responsible_id;
+        $medication->save();
 
-        $medication->update($validated);
-
-        return response()->json($medication, 200);
+        return redirect()->route('medications.index');
     }
 
-    public function destroy(Medication $medication)
+    public function destroy(string $id)
     {
+        $medication = Medication::findOrFail($id);
         $medication->delete();
-        return response()->json(null, 204);
+
+        return redirect()->route('medications.index');
     }
 }

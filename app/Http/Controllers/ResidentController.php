@@ -2,60 +2,66 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Resident;
 use Illuminate\Http\Request;
+use App\Models\Resident;
+use App\Models\User;
 
 class ResidentController extends Controller
 {
     public function index()
     {
-        return response()->json(Resident::with('contact')->get(), 200);
+        $residents = Resident::with('contactUser')->get();
+        return view('residents.index', compact('residents'));
+    }
+
+    public function create()
+    {
+        $users = User::all();
+        return view('residents.create', compact('users'));
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name'            => 'required|string|max:255',
-            'birth_date'      => 'required|date',
-            'gender'          => 'required|string',
-            'medical_history' => 'nullable|string',
-            'allergies'       => 'nullable|string',
-            'emergency_contact' => 'nullable|string',
-            'mood'            => 'nullable|string|max:255',
-            'contact_user_id' => 'nullable|exists:users,id',
-        ]);
+        $resident = new Resident();
+        $resident->name = $request->name;
+        $resident->birth_date = $request->birth_date;
+        $resident->gender = $request->gender;
+        $resident->medical_history = $request->medical_history;
+        $resident->allergies = $request->allergies;
+        $resident->mood = $request->mood;
+        $resident->contact_user_id = $request->contact_user_id;
+        $resident->save();
 
-        $resident = Resident::create($validated);
-
-        return response()->json($resident, 201);
+        return redirect()->route('residents.index');
     }
 
-    public function show(Resident $resident)
+    public function edit(string $id)
     {
-        return response()->json($resident->load('contact'), 200);
+        $resident = Resident::findOrFail($id);
+        $users = User::all();
+        return view('residents.edit', compact('resident', 'users'));
     }
 
-    public function update(Request $request, Resident $resident)
+    public function update(Request $request, string $id)
     {
-        $validated = $request->validate([
-            'name'            => 'sometimes|string|max:255',
-            'birth_date'      => 'sometimes|date',
-            'gender'          => 'sometimes|string',
-            'medical_history' => 'nullable|string',
-            'allergies'       => 'nullable|string',
-            'emergency_contact' => 'nullable|string',
-            'mood'            => 'nullable|string|max:255',
-            'contact_user_id' => 'nullable|exists:users,id',
-        ]);
+        $resident = Resident::findOrFail($id);
+        $resident->name = $request->name;
+        $resident->birth_date = $request->birth_date;
+        $resident->gender = $request->gender;
+        $resident->medical_history = $request->medical_history;
+        $resident->allergies = $request->allergies;
+        $resident->mood = $request->mood;
+        $resident->contact_user_id = $request->contact_user_id;
+        $resident->save();
 
-        $resident->update($validated);
-
-        return response()->json($resident, 200);
+        return redirect()->route('residents.index');
     }
 
-    public function destroy(Resident $resident)
+    public function destroy(string $id)
     {
+        $resident = Resident::findOrFail($id);
         $resident->delete();
-        return response()->json(null, 204);
+
+        return redirect()->route('residents.index');
     }
 }

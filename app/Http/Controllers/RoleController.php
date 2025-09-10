@@ -2,48 +2,51 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Role;
 use Illuminate\Http\Request;
+use App\Models\Role;
 
 class RoleController extends Controller
 {
     public function index()
     {
-        return response()->json(Role::all(), 200);
+        $roles = Role::all();
+        return view('roles.index', compact('roles'));
+    }
+
+    public function create()
+    {
+        return view('roles.create');
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name'        => 'required|string|max:255|unique:roles',
-            'description' => 'nullable|string',
-        ]);
+        $role = new Role();
+        $role->name = $request->name;
+        $role->save();
 
-        $role = Role::create($validated);
-
-        return response()->json($role, 201);
+        return redirect()->route('roles.index');
     }
 
-    public function show(Role $role)
+    public function edit(string $id)
     {
-        return response()->json($role, 200);
+        $role = Role::findOrFail($id);
+        return view('roles.edit', compact('role'));
     }
 
-    public function update(Request $request, Role $role)
+    public function update(Request $request, string $id)
     {
-        $validated = $request->validate([
-            'name'        => 'sometimes|string|max:255|unique:roles,name,' . $role->id,
-            'description' => 'nullable|string',
-        ]);
+        $role = Role::findOrFail($id);
+        $role->name = $request->name;
+        $role->save();
 
-        $role->update($validated);
-
-        return response()->json($role, 200);
+        return redirect()->route('roles.index');
     }
 
-    public function destroy(Role $role)
+    public function destroy(string $id)
     {
+        $role = Role::findOrFail($id);
         $role->delete();
-        return response()->json(null, 204);
+
+        return redirect()->route('roles.index');
     }
 }

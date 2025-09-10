@@ -2,52 +2,65 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Visit;
 use Illuminate\Http\Request;
+use App\Models\Visit;
+use App\Models\Resident;
+use App\Models\User;
 
 class VisitController extends Controller
 {
     public function index()
     {
-        return response()->json(Visit::with(['resident','user'])->get(), 200);
+        $visits = Visit::with(['resident', 'user'])->get();
+        return view('visits.index', compact('visits'));
+    }
+
+    public function create()
+    {
+        $residents = Resident::all();
+        $users = User::all();
+        return view('visits.create', compact('residents', 'users'));
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'visitor_name' => 'required|string|max:255',
-            'date'         => 'required|date',
-            'resident_id'  => 'required|exists:residents,id',
-            'user_id'      => 'required|exists:users,id',
-        ]);
+        $visit = new Visit();
+        $visit->resident_id = $request->resident_id;
+        $visit->user_id = $request->user_id;
+        $visit->visit_date = $request->visit_date;
+        $visit->visit_time = $request->visit_time;
+        $visit->relationship = $request->relationship;
+        $visit->save();
 
-        $visit = Visit::create($validated);
-
-        return response()->json($visit, 201);
+        return redirect()->route('visits.index');
     }
 
-    public function show(Visit $visit)
+    public function edit(string $id)
     {
-        return response()->json($visit->load(['resident','user']), 200);
+        $visit = Visit::findOrFail($id);
+        $residents = Resident::all();
+        $users = User::all();
+        return view('visits.edit', compact('visit', 'residents', 'users'));
     }
 
-    public function update(Request $request, Visit $visit)
+    public function update(Request $request, string $id)
     {
-        $validated = $request->validate([
-            'visitor_name' => 'sometimes|string|max:255',
-            'date'         => 'sometimes|date',
-            'resident_id'  => 'sometimes|exists:residents,id',
-            'user_id'      => 'sometimes|exists:users,id',
-        ]);
+        $visit = Visit::findOrFail($id);
+        $visit->resident_id = $request->resident_id;
+        $visit->user_id = $request->user_id;
+        $visit->visit_date = $request->visit_date;
+        $visit->visit_time = $request->visit_time;
+        $visit->relationship = $request->relationship;
+        $visit->save();
 
-        $visit->update($validated);
-
-        return response()->json($visit, 200);
+        return redirect()->route('visits.index');
     }
 
-    public function destroy(Visit $visit)
+    public function destroy(string $id)
     {
+        $visit = Visit::findOrFail($id);
         $visit->delete();
-        return response()->json(null, 204);
+
+        return redirect()->route('visits.index');
     }
 }

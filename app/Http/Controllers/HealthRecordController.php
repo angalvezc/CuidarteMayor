@@ -2,52 +2,65 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\HealthRecord;
 use Illuminate\Http\Request;
+use App\Models\HealthRecord;
+use App\Models\Resident;
+use App\Models\User;
 
 class HealthRecordController extends Controller
 {
     public function index()
     {
-        return response()->json(HealthRecord::with(['doctor','resident'])->get(), 200);
+        $records = HealthRecord::with(['resident', 'doctor'])->get();
+        return view('health_records.index', compact('records'));
+    }
+
+    public function create()
+    {
+        $residents = Resident::all();
+        $doctors = User::all();
+        return view('health_records.create', compact('residents', 'doctors'));
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'doctor_id'   => 'required|exists:users,id',
-            'resident_id' => 'required|exists:residents,id',
-            'description' => 'required|string',
-            'date'        => 'required|date',
-        ]);
+        $record = new HealthRecord();
+        $record->resident_id = $request->resident_id;
+        $record->doctor_id = $request->doctor_id;
+        $record->diagnosis = $request->diagnosis;
+        $record->treatment = $request->treatment;
+        $record->record_date = $request->record_date;
+        $record->save();
 
-        $record = HealthRecord::create($validated);
-
-        return response()->json($record, 201);
+        return redirect()->route('health_records.index');
     }
 
-    public function show(HealthRecord $healthRecord)
+    public function edit(string $id)
     {
-        return response()->json($healthRecord->load(['doctor','resident']), 200);
+        $record = HealthRecord::findOrFail($id);
+        $residents = Resident::all();
+        $doctors = User::all();
+        return view('health_records.edit', compact('record', 'residents', 'doctors'));
     }
 
-    public function update(Request $request, HealthRecord $healthRecord)
+    public function update(Request $request, string $id)
     {
-        $validated = $request->validate([
-            'doctor_id'   => 'sometimes|exists:users,id',
-            'resident_id' => 'sometimes|exists:residents,id',
-            'description' => 'sometimes|string',
-            'date'        => 'sometimes|date',
-        ]);
+        $record = HealthRecord::findOrFail($id);
+        $record->resident_id = $request->resident_id;
+        $record->doctor_id = $request->doctor_id;
+        $record->diagnosis = $request->diagnosis;
+        $record->treatment = $request->treatment;
+        $record->record_date = $request->record_date;
+        $record->save();
 
-        $healthRecord->update($validated);
-
-        return response()->json($healthRecord, 200);
+        return redirect()->route('health_records.index');
     }
 
-    public function destroy(HealthRecord $healthRecord)
+    public function destroy(string $id)
     {
-        $healthRecord->delete();
-        return response()->json(null, 204);
+        $record = HealthRecord::findOrFail($id);
+        $record->delete();
+
+        return redirect()->route('health_records.index');
     }
 }

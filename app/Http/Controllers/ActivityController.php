@@ -2,52 +2,69 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Activity;
 use Illuminate\Http\Request;
+use App\Models\Activity;
+use App\Models\Resident;
+use App\Models\User;
 
 class ActivityController extends Controller
 {
     public function index()
     {
-        return response()->json(Activity::with(['resident','responsible'])->get(), 200);
+        $activities = Activity::with(['resident', 'responsible'])->get();
+        return view('activities.index', compact('activities'));
+    }
+
+    public function create()
+    {
+        $residents = Resident::all();
+        $users = User::all();
+        return view('activities.create', compact('residents', 'users'));
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name'          => 'required|string|max:255',
-            'schedule'      => 'required|date',
-            'resident_id'   => 'required|exists:residents,id',
-            'responsible_id'=> 'required|exists:users,id',
-        ]);
+        $activity = new Activity();
+        $activity->name = $request->name;
+        $activity->schedule = $request->schedule;
+        $activity->resident_id = $request->resident_id;
+        $activity->responsible_id = $request->responsible_id;
+        $activity->save();
 
-        $activity = Activity::create($validated);
-
-        return response()->json($activity, 201);
+        return redirect()->route('activities.index');
     }
 
-    public function show(Activity $activity)
+    public function show(string $id)
     {
-        return response()->json($activity->load(['resident','responsible']), 200);
+        $activity = Activity::with(['resident', 'responsible'])->findOrFail($id);
+        return view('activities.show', compact('activity'));
     }
 
-    public function update(Request $request, Activity $activity)
+    public function edit(string $id)
     {
-        $validated = $request->validate([
-            'name'          => 'sometimes|string|max:255',
-            'schedule'      => 'sometimes|date',
-            'resident_id'   => 'sometimes|exists:residents,id',
-            'responsible_id'=> 'sometimes|exists:users,id',
-        ]);
-
-        $activity->update($validated);
-
-        return response()->json($activity, 200);
+        $activity = Activity::findOrFail($id);
+        $residents = Resident::all();
+        $users = User::all();
+        return view('activities.edit', compact('activity', 'residents', 'users'));
     }
 
-    public function destroy(Activity $activity)
+    public function update(Request $request, string $id)
     {
+        $activity = Activity::findOrFail($id);
+        $activity->name = $request->name;
+        $activity->schedule = $request->schedule;
+        $activity->resident_id = $request->resident_id;
+        $activity->responsible_id = $request->responsible_id;
+        $activity->save();
+
+        return redirect()->route('activities.index');
+    }
+
+    public function destroy(string $id)
+    {
+        $activity = Activity::findOrFail($id);
         $activity->delete();
-        return response()->json(null, 204);
+
+        return redirect()->route('activities.index');
     }
 }
