@@ -2,63 +2,52 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Medication;
 use Illuminate\Http\Request;
 
 class MedicationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        return response()->json(Medication::with(['resident','responsible'])->get(), 200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name'          => 'required|string|max:255',
+            'dose'          => 'required|string|max:255',
+            'resident_id'   => 'required|exists:residents,id',
+            'responsible_id'=> 'required|exists:users,id',
+        ]);
+
+        $medication = Medication::create($validated);
+
+        return response()->json($medication, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Medication $medication)
     {
-        //
+        return response()->json($medication->load(['resident','responsible']), 200);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, Medication $medication)
     {
-        //
+        $validated = $request->validate([
+            'name'          => 'sometimes|string|max:255',
+            'dose'          => 'sometimes|string|max:255',
+            'resident_id'   => 'sometimes|exists:residents,id',
+            'responsible_id'=> 'sometimes|exists:users,id',
+        ]);
+
+        $medication->update($validated);
+
+        return response()->json($medication, 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(Medication $medication)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $medication->delete();
+        return response()->json(null, 204);
     }
 }

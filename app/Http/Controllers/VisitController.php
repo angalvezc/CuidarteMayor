@@ -2,63 +2,52 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Visit;
 use Illuminate\Http\Request;
 
 class VisitController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        return response()->json(Visit::with(['resident','user'])->get(), 200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'visitor_name' => 'required|string|max:255',
+            'date'         => 'required|date',
+            'resident_id'  => 'required|exists:residents,id',
+            'user_id'      => 'required|exists:users,id',
+        ]);
+
+        $visit = Visit::create($validated);
+
+        return response()->json($visit, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Visit $visit)
     {
-        //
+        return response()->json($visit->load(['resident','user']), 200);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, Visit $visit)
     {
-        //
+        $validated = $request->validate([
+            'visitor_name' => 'sometimes|string|max:255',
+            'date'         => 'sometimes|date',
+            'resident_id'  => 'sometimes|exists:residents,id',
+            'user_id'      => 'sometimes|exists:users,id',
+        ]);
+
+        $visit->update($validated);
+
+        return response()->json($visit, 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(Visit $visit)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $visit->delete();
+        return response()->json(null, 204);
     }
 }

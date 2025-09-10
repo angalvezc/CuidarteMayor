@@ -2,63 +2,60 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Resident;
 use Illuminate\Http\Request;
 
 class ResidentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        return response()->json(Resident::with('contact')->get(), 200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name'            => 'required|string|max:255',
+            'birth_date'      => 'required|date',
+            'gender'          => 'required|string',
+            'medical_history' => 'nullable|string',
+            'allergies'       => 'nullable|string',
+            'emergency_contact' => 'nullable|string',
+            'mood'            => 'nullable|string|max:255',
+            'contact_user_id' => 'nullable|exists:users,id',
+        ]);
+
+        $resident = Resident::create($validated);
+
+        return response()->json($resident, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Resident $resident)
     {
-        //
+        return response()->json($resident->load('contact'), 200);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, Resident $resident)
     {
-        //
+        $validated = $request->validate([
+            'name'            => 'sometimes|string|max:255',
+            'birth_date'      => 'sometimes|date',
+            'gender'          => 'sometimes|string',
+            'medical_history' => 'nullable|string',
+            'allergies'       => 'nullable|string',
+            'emergency_contact' => 'nullable|string',
+            'mood'            => 'nullable|string|max:255',
+            'contact_user_id' => 'nullable|exists:users,id',
+        ]);
+
+        $resident->update($validated);
+
+        return response()->json($resident, 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(Resident $resident)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $resident->delete();
+        return response()->json(null, 204);
     }
 }
