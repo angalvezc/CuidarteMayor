@@ -19,7 +19,6 @@ return new class extends Migration
             $table->time('visit_time');
             $table->string('relationship'); // hijo, nieto, sobrino, etc.
             $table->timestamps();
-
             $table->foreign('resident_id')->references('id')->on('residents');
             $table->foreign('user_id')->references('id')->on('users');
         });
