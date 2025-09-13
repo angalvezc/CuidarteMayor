@@ -60,6 +60,18 @@
                 @endforeach
             </select>
         </div>
+        <div class="mb-3">
+            <label for="contact_relation" class="form-label">Tipo de relación con el contacto</label>
+                <select class="form-select" id="contact_relation" name="contact_relation">
+                    <option value="">Seleccione...</option>
+                    <option value="Hijo">Hijo</option>
+                    <option value="Hermano">Hermano</option>
+                    <option value="Conyugue">Conyugue</option>
+                    <option value="Nieto">Nieto</option>
+                    <option value="Otro">Otro</option>
+                </select>
+        </div>
+
 
         <button type="submit" class="btn btn-success">Guardar</button>
         <a href="{{ route('residents.index') }}" class="btn btn-secondary">Cancelar</a>

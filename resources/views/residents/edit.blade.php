@@ -78,6 +78,22 @@
                         @endforeach
                     </select>
                 </div>
+                <div class="mb-3">
+                    <label for="contact_relation" class="form-label">Tipo de relación con el contacto</label>
+                    <select class="form-select" id="contact_relation" name="contact_relation">
+                        <option value="">Seleccione...</option>
+                        @php
+                            $relation = old('contact_relation', $resident->contact_relation);
+                        @endphp
+                        <option value="Hijo" {{ $relation == 'Hijo' ? 'selected' : '' }}>Hijo</option>
+                        <option value="Hermano" {{ $relation == 'Hermano' ? 'selected' : '' }}>Hermano</option>
+                        <option value="Conyugue" {{ $relation == 'Conyugue' ? 'selected' : '' }}>Conyugue</option>
+                        <option value="Nieto" {{ $relation == 'Nieto' ? 'selected' : '' }}>Nieto</option>
+                        <option value="Otro" {{ $relation == 'Otro' ? 'selected' : '' }}>Otro</option>
+                    </select>
+                </div>
+
+
 
                 <div class="d-flex justify-content-between">
                     <a href="{{ route('residents.index') }}" class="btn btn-secondary">Cancelar</a>

@@ -16,7 +16,8 @@ class Resident extends Model
         'medical_history',
         'allergies',
         'mood',
-        'contact_user_id'
+        'contact_user_id',
+        'contact_relation'
     ];
 
     // Relación: residente tiene un usuario como contacto principal
