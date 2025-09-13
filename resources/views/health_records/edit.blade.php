@@ -12,14 +12,17 @@
 
         <div class="mb-3">
             <label for="resident_id" class="form-label">Residente</label>
-            <select name="resident_id" id="resident_id" class="form-select" required>
+            <select name="resident_id" id="resident_id" class="form-select" disabled>
                 @foreach($residents as $resident)
                     <option value="{{ $resident->id }}" {{ $resident->id == $healthRecord->resident_id ? 'selected' : '' }}>
                         {{ $resident->name }}
                     </option>
                 @endforeach
             </select>
+            {{-- Campo oculto para enviar el valor al backend --}}
+            <input type="hidden" name="resident_id" value="{{ $healthRecord->resident_id }}">
         </div>
+
 
         <div class="mb-3">
             <label for="doctor_id" class="form-label">Doctor</label>
