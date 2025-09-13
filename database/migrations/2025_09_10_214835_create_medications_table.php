@@ -13,14 +13,16 @@ return new class extends Migration
     {
         Schema::create('medications', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('resident_id');
-            $table->string('name');
-            $table->string('dosage');
-            $table->string('frequency');
+            $table->unsignedBigInteger('health_record_id');
+            $table->unsignedBigInteger('user_id'); // médico que administró
+            $table->string('name'); // nombre del medicamento
+            $table->string('dosage')->nullable(); // dosis
+            $table->text('instructions')->nullable(); // instrucciones
+            $table->date('administration_date');
             $table->timestamps();
-            $table->unsignedBigInteger('responsible_id');
-            $table->foreign('responsible_id')->references('id')->on('users');
-            $table->foreign('resident_id')->references('id')->on('residents');
+
+            $table->foreign('health_record_id')->references('id')->on('health_records')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

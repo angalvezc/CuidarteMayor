@@ -1,5 +1,5 @@
 {{-- resources/views/residents/edit.blade.php --}}
-@extends('layouts.app')
+@extends('layouts.app1')
 
 @section('title', 'Editar Residente')
 
@@ -22,6 +22,10 @@
             <form action="{{ route('residents.update', $resident->id) }}" method="POST">
                 @csrf
                 @method('PUT')
+                <div class="mb-3">
+                    <label for="dni" class="form-label">DNI / Cédula</label>
+                    <input type="text" name="dni" id="dni" class="form-control" value="{{ $resident->dni }}" required>
+                </div>
 
                 <div class="mb-3">
                     <label for="name" class="form-label">Nombre completo</label>

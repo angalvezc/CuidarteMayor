@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app1')
 
 @section('content')
 <div class="container">
@@ -12,6 +12,10 @@
 
     <form action="{{ route('residents.store') }}" method="POST">
         @csrf
+        <div class="mb-3">
+                    <label for="dni" class="form-label">DNI / Cédula</label>
+                    <input type="text" name="dni" id="dni" class="form-control" required>
+        </div>
         <div class="mb-3">
             <label for="name" class="form-label">Nombre completo</label>
             <input type="text" class="form-control" id="name" name="name" required>

@@ -10,20 +10,46 @@ class Medication extends Model
     use HasFactory;
 
     protected $fillable = [
-        'resident_id',
+        'health_record_id',
+        'user_id',
         'name',
         'dosage',
-        'frequency',
-        'responsible_id'
+        'instructions',
+        'administration_date',
     ];
 
-    public function resident()
+    // Relación con HealthRecord
+    public function healthRecord()
     {
-        return $this->belongsTo(Resident::class);
+        return $this->belongsTo(HealthRecord::class);
     }
 
-    public function responsible()
+    // Relación con el usuario (doctor/enfermero que administra)
+    public function administeredBy()
     {
-        return $this->belongsTo(User::class, 'responsible_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
+
+    // Relación indirecta con el residente
+    public function resident()
+    {
+        return $this->hasOneThrough(Resident::class, HealthRecord::class, 'id', 'id', 'health_record_id', 'resident_id');
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function nurse()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'user_id');
+    }
+    // App\Models\Medication.php
+
+    protected $casts = [
+        'administration_date' => 'datetime',
+    ];
+
+
+
 }
+

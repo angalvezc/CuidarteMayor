@@ -10,6 +10,7 @@ class UserController extends Controller
 {
     public function index()
     {
+        
         $users = User::with('role')->get();
         return view('users.index', compact('users'));
     }
@@ -23,6 +24,7 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $user = new User();
+         $user->dni = $request->dni;
         $user->name = $request->name;
         $user->email = $request->email;
         $user->password = bcrypt($request->password);
@@ -43,6 +45,7 @@ class UserController extends Controller
     public function update(Request $request, string $id)
     {
         $user = User::findOrFail($id);
+        $user->dni = $request->dni;
         $user->name = $request->name;
         $user->email = $request->email;
         if ($request->password) {

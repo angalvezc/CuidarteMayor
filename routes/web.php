@@ -25,13 +25,15 @@ use App\Http\Controllers\RoleController;
 /**
  * USERS
  */
-Route::get('/users', [UserController::class, 'index'])->name('users.index');
-Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
-Route::post('/users', [UserController::class, 'store'])->name('users.store');
-Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
-Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
-Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
-Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+Route::middleware('auth', 'role:admin')->group(function () {
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+    Route::post('/users', [UserController::class, 'store'])->name('users.store');
+    Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
+    Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+});
 
 /**
  * RESIDENTS
@@ -43,10 +45,16 @@ Route::get('/residents/{resident}', [ResidentController::class, 'show'])->name('
 Route::get('/residents/{resident}/edit', [ResidentController::class, 'edit'])->name('residents.edit');
 Route::put('/residents/{resident}', [ResidentController::class, 'update'])->name('residents.update');
 Route::delete('/residents/{resident}', [ResidentController::class, 'destroy'])->name('residents.destroy');
+Route::get('/residents/search/{dni}', [App\Http\Controllers\ResidentController::class, 'searchByDni']);
+
 
 /**
  * HEALTH RECORDS
  */
+Route::get('/health-records/check/{resident}', function ($resident) {
+    $exists = \App\Models\HealthRecord::where('resident_id', $resident)->exists();
+    return response()->json(['exists' => $exists]);
+});
 Route::get('/health-records', [HealthRecordController::class, 'index'])->name('health_records.index');
 Route::get('/health-records/create', [HealthRecordController::class, 'create'])->name('health_records.create');
 Route::post('/health-records', [HealthRecordController::class, 'store'])->name('health_records.store');
@@ -58,24 +66,20 @@ Route::delete('/health-records/{healthRecord}', [HealthRecordController::class, 
 /**
  * MEDICATIONS
  */
-Route::get('/medications', [MedicationController::class, 'index'])->name('medications.index');
-Route::get('/medications/create', [MedicationController::class, 'create'])->name('medications.create');
-Route::post('/medications', [MedicationController::class, 'store'])->name('medications.store');
-Route::get('/medications/{medication}', [MedicationController::class, 'show'])->name('medications.show');
-Route::get('/medications/{medication}/edit', [MedicationController::class, 'edit'])->name('medications.edit');
-Route::put('/medications/{medication}', [MedicationController::class, 'update'])->name('medications.update');
-Route::delete('/medications/{medication}', [MedicationController::class, 'destroy'])->name('medications.destroy');
+Route::resource('medications', MedicationController::class);
+// Mostrar todas las dosis de un registro de salud
+Route::get('medications/record/{healthRecord}', [MedicationController::class, 'showRecord'])->name('medications.record');
 
-/**
- * ACTIVITIES
- */
-Route::get('/activities', [ActivityController::class, 'index'])->name('activities.index');
-Route::get('/activities/create', [ActivityController::class, 'create'])->name('activities.create');
-Route::post('/activities', [ActivityController::class, 'store'])->name('activities.store');
-Route::get('/activities/{activity}', [ActivityController::class, 'show'])->name('activities.show');
-Route::get('/activities/{activity}/edit', [ActivityController::class, 'edit'])->name('activities.edit');
-Route::put('/activities/{activity}', [ActivityController::class, 'update'])->name('activities.update');
-Route::delete('/activities/{activity}', [ActivityController::class, 'destroy'])->name('activities.destroy');
+// Actualizar dosis
+Route::put('medications/{medication}', [MedicationController::class, 'update'])->name('medications.update');
+Route::post('/medications/{healthRecord}/complete', [MedicationController::class, 'complete'])
+    ->name('medications.complete')
+    ->middleware(['auth']);
+
+
+
+
+
 
 /**
  * VISITS
@@ -98,3 +102,11 @@ Route::get('/roles/{role}', [RoleController::class, 'show'])->name('roles.show')
 Route::get('/roles/{role}/edit', [RoleController::class, 'edit'])->name('roles.edit');
 Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
 Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
+
+
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

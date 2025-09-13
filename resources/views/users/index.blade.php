@@ -1,5 +1,5 @@
 {{-- resources/views/users/index.blade.php --}}
-@extends('layouts.app')
+@extends('layouts.app1')
 
 @section('content')
 <div class="container mt-4">
@@ -18,6 +18,7 @@
         <thead class="table-dark">
             <tr>
                 <th>ID</th>
+                <th># Identificacion</th>
                 <th>Nombre</th>
                 <th>Email</th>
                 <th>Teléfono</th>
@@ -29,6 +30,7 @@
             @forelse($users as $user)
                 <tr>
                     <td>{{ $user->id }}</td>
+                    <td>{{ $user->dni }}</td>
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->email }}</td>
                     <td>{{ $user->phone ?? 'N/A' }}</td>

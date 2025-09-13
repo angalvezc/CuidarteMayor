@@ -21,6 +21,10 @@ class HealthRecord extends Model
     {
         return $this->belongsTo(Resident::class);
     }
+    public function medications()
+    {
+        return $this->hasMany(Medication::class);
+    }
 
     public function doctor()
     {

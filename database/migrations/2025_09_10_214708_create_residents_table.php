@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('residents', function (Blueprint $table) {
             $table->id();
+            $table->string('dni')->unique();
             $table->string('name');
+
             $table->date('birth_date');
             $table->enum('gender', ['Masculino', 'Femenino', 'Otro']);
             $table->text('medical_history')->nullable();

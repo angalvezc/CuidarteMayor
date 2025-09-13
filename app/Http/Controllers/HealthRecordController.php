@@ -9,10 +9,20 @@ use App\Models\User;
 
 class HealthRecordController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $records = HealthRecord::with(['resident', 'doctor'])->get();
-        return view('health_records.index', compact('records'));
+         $query = HealthRecord::with(['resident', 'doctor']);
+
+    // Si hay búsqueda por DNI
+        if ($request->filled('dni')) {
+            $query->whereHas('resident', function ($q) use ($request) {
+                $q->where('dni', 'like', '%' . $request->dni . '%');
+            });
+    }
+
+    $records = $query->get();
+
+    return view('health_records.index', compact('records'));
     }
 
     public function create()
@@ -24,36 +34,52 @@ class HealthRecordController extends Controller
 
     public function store(Request $request)
     {
-        $record = new HealthRecord();
-        $record->resident_id = $request->resident_id;
-        $record->doctor_id = $request->doctor_id;
-        $record->diagnosis = $request->diagnosis;
-        $record->treatment = $request->treatment;
-        $record->record_date = $request->record_date;
-        $record->save();
+        $request->validate([
+            'dni' => 'required|exists:residents,dni', // Opcional, si usas DNI
+            'resident_id' => 'required|exists:residents,id|unique:health_records,resident_id', // Valida unicidad
+            'doctor_id' => 'required|exists:users,id',
+            'diagnosis' => 'required|string',
+            'treatment' => 'nullable|string',
+            'record_date' => 'required|date',
+        ]);
 
-        return redirect()->route('health_records.index');
+        // Opcional: Verificación manual (redundante con unique, pero para mensaje custom)
+        if (HealthRecord::where('resident_id', $request->resident_id)->exists()) {
+            return back()->withErrors(['resident_id' => 'Este residente ya tiene un historial médico registrado.']);
+        }
+
+        HealthRecord::create($request->all());
+
+        return redirect()->route('health_records.index')->with('success', 'Historial registrado.');
     }
 
-    public function edit(string $id)
+    public function edit(HealthRecord $healthRecord)
     {
-        $record = HealthRecord::findOrFail($id);
         $residents = Resident::all();
         $doctors = User::all();
-        return view('health_records.edit', compact('record', 'residents', 'doctors'));
+
+        return view('health_records.edit', compact('healthRecord', 'residents', 'doctors'));
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, HealthRecord $healthRecord)
     {
-        $record = HealthRecord::findOrFail($id);
-        $record->resident_id = $request->resident_id;
-        $record->doctor_id = $request->doctor_id;
-        $record->diagnosis = $request->diagnosis;
-        $record->treatment = $request->treatment;
-        $record->record_date = $request->record_date;
-        $record->save();
+        $request->validate([
+            'resident_id' => 'required|exists:residents,id',
+            'doctor_id'   => 'required|exists:users,id',
+            'diagnosis'   => 'required|string',
+            'treatment'   => 'nullable|string',
+            'record_date' => 'required|date',
+        ]);
 
-        return redirect()->route('health_records.index');
+        $healthRecord->update([
+            'resident_id' => $request->resident_id,
+            'doctor_id'   => $request->doctor_id,
+            'diagnosis'   => $request->diagnosis,
+            'treatment'   => $request->treatment,
+            'record_date' => $request->record_date,
+        ]);
+
+        return redirect()->route('health_records.index')->with('success', 'Historial actualizado.');
     }
 
     public function destroy(string $id)

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app1')
 
 @section('title', 'Crear Usuario')
 
@@ -10,6 +10,10 @@
         <div class="card-body">
             <form action="{{ route('users.store') }}" method="POST">
                 @csrf
+                <div class="mb-3">
+                    <label for="dni" class="form-label">DNI / Cédula</label>
+                    <input type="text" name="dni" id="dni" class="form-control" required>
+                </div>
 
                 <div class="mb-3">
                     <label for="name" class="form-label">Nombre</label>

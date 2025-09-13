@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app1')
 
 @section('content')
 <div class="container">
@@ -12,7 +12,8 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>#</th>
+                <th>ID</th>
+                <th># Identificacion</th>
                 <th>Nombre</th>
                 <th>Fecha de Nacimiento</th>
                 <th>Género</th>
@@ -25,6 +26,7 @@
             @forelse($residents as $resident)
                 <tr>
                     <td>{{ $resident->id }}</td>
+                    <td>{{ $resident->dni }}</td>
                     <td>{{ $resident->name }}</td>
                     <td>{{ $resident->birth_date }}</td>
                     <td>{{ $resident->gender }}</td>

@@ -23,6 +23,7 @@ class ResidentController extends Controller
     public function store(Request $request)
     {
         $resident = new Resident();
+        $resident->dni = $request->dni;
         $resident->name = $request->name;
         $resident->birth_date = $request->birth_date;
         $resident->gender = $request->gender;
@@ -45,6 +46,7 @@ class ResidentController extends Controller
     public function update(Request $request, string $id)
     {
         $resident = Resident::findOrFail($id);
+        $resident->dni = $request->dni;
         $resident->name = $request->name;
         $resident->birth_date = $request->birth_date;
         $resident->gender = $request->gender;
@@ -64,4 +66,21 @@ class ResidentController extends Controller
 
         return redirect()->route('residents.index');
     }
+
+
+
+    public function searchByDni($dni)
+{
+    $resident = Resident::where('dni', $dni)->first();
+
+    if ($resident) {
+        return response()->json([
+            'success' => true,
+            'resident' => $resident
+        ]);
+    }
+
+    return response()->json(['success' => false]);
+}
+
 }
