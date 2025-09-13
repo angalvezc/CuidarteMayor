@@ -20,7 +20,7 @@
                     <th>DNI</th>
                     <th>Nombre</th>
                     <th>Género</th>
-                    <th>Historial Médico</th>
+
                     <th>Estado de Ánimo</th>
                     <th>Alergias</th>
                     <th>Diagnóstico</th>
@@ -36,7 +36,7 @@
                         <td>{{ $resident->dni }}</td>
                         <td>{{ $resident->name }}</td>
                         <td>{{ $resident->gender }}</td>
-                        <td>{{ $resident->medical_history }}</td>
+
                         <td>{{ $resident->mood }}</td>
                         <td>{{ $resident->allergies }}</td>
                         <td>{{ $record->diagnosis }}</td>
@@ -46,7 +46,8 @@
                         @php $lastMedication = $record->medications->last(); @endphp
                         <td>
                             @if($lastMedication)
-                                <span class="d-block"><strong>Enfermerx:</strong> {{ $lastMedication->nurse->name ?? 'N/A' }}</span>
+                            <span class="d-block"><strong>Rol:</strong> {{ $lastMedication->nurse->role->name ?? 'N/A' }}</span>
+                                <span class="d-block"><strong>Nombre :</strong> {{ $lastMedication->nurse->name ?? 'N/A' }}</span>
                                 <span class="d-block"><strong>Fecha:</strong> {{ $lastMedication->administration_date->timezone('America/Bogota')->format('Y-m-d H:i') }}</span>
 
 

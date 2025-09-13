@@ -10,6 +10,7 @@
         @csrf
         @method('PUT')
 
+        {{-- Residente (disabled) --}}
         <div class="mb-3">
             <label for="resident_id" class="form-label">Residente</label>
             <select name="resident_id" id="resident_id" class="form-select" disabled>
@@ -19,20 +20,14 @@
                     </option>
                 @endforeach
             </select>
-            {{-- Campo oculto para enviar el valor al backend --}}
             <input type="hidden" name="resident_id" value="{{ $healthRecord->resident_id }}">
         </div>
 
-
+        {{-- Doctor (disabled, muestra quien creó el registro) --}}
         <div class="mb-3">
-            <label for="doctor_id" class="form-label">Doctor</label>
-            <select name="doctor_id" id="doctor_id" class="form-select" required>
-                @foreach($doctors as $doctor)
-                    <option value="{{ $doctor->id }}" {{ $doctor->id == $healthRecord->doctor_id ? 'selected' : '' }}>
-                        {{ $doctor->name }}
-                    </option>
-                @endforeach
-            </select>
+            <label for="doctor_name" class="form-label">Doctor</label>
+            <input type="text" class="form-control" value="{{ $healthRecord->doctor->name }}" disabled>
+            <input type="hidden" name="doctor_id" value="{{ $healthRecord->doctor_id }}">
         </div>
 
         <div class="mb-3">
@@ -45,10 +40,12 @@
             <textarea name="treatment" id="treatment" class="form-control" rows="3">{{ $healthRecord->treatment }}</textarea>
         </div>
 
-        <div class="mb-3">
-            <label for="record_date" class="form-label">Fecha de Registro</label>
-            <input type="date" name="record_date" id="record_date" class="form-control" value="{{ $healthRecord->record_date }}" required>
-        </div>
+
+        {{-- Campo oculto opcional --}}
+        <input type="hidden" name="record_date" value="{{ now() }}">
+
+
+
 
         <button type="submit" class="btn btn-success">Actualizar</button>
         <a href="{{ route('health_records.index') }}" class="btn btn-secondary">Cancelar</a>

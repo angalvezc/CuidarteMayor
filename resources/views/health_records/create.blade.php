@@ -33,16 +33,8 @@
         {{-- Campo oculto para enviar resident_id --}}
         <input type="hidden" name="resident_id" id="resident_id" required>
 
-        {{-- Selección de doctor --}}
-        <div class="mb-3">
-            <label for="doctor_id" class="form-label">Doctor</label>
-            <select name="doctor_id" id="doctor_id" class="form-select" required>
-                <option value="">Seleccione...</option>
-                @foreach($doctors as $doctor)
-                    <option value="{{ $doctor->id }}">{{ $doctor->name }}</option>
-                @endforeach
-            </select>
-        </div>
+        {{-- Campo oculto para asignar el doctor logueado automáticamente --}}
+        <input type="hidden" name="doctor_id" value="{{ Auth::id() }}">
 
         <div class="mb-3">
             <label for="diagnosis" class="form-label">Diagnóstico</label>
@@ -54,10 +46,12 @@
             <textarea name="treatment" id="treatment" class="form-control" rows="3"></textarea>
         </div>
 
-        <div class="mb-3">
-            <label for="record_date" class="form-label">Fecha de Registro</label>
-            <input type="date" name="record_date" id="record_date" class="form-control" value="{{ date('Y-m-d') }}" required>
-        </div>
+
+        {{-- Campo oculto opcional --}}
+        <input type="hidden" name="record_date" value="{{ now() }}">
+
+
+
 
         <button type="submit" class="btn btn-success" id="submitBtn" disabled>Guardar</button>
         <a href="{{ route('health_records.index') }}" class="btn btn-secondary">Cancelar</a>
@@ -83,7 +77,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     residentNameInput.value = data.resident.name;
                     residentIdInput.value = data.resident.id;
 
-                    // Verificar si ya existe historial
                     fetch(`/health-records/check/${data.resident.id}`)
                         .then(res => res.json())
                         .then(checkData => {
@@ -112,7 +105,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     });
 
-    // Validar antes de enviar el formulario
     document.getElementById('healthForm').addEventListener('submit', function(e) {
         if (!residentIdInput.value) {
             e.preventDefault();
