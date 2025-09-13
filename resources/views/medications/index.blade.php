@@ -47,7 +47,8 @@
                         <td>
                             @if($lastMedication)
                                 <span class="d-block"><strong>Enfermerx:</strong> {{ $lastMedication->nurse->name ?? 'N/A' }}</span>
-                               <span class="d-block"><strong>Fecha:</strong> {{ $lastMedication->administration_date->timezone('America/Bogota')->format('Y-m-d H:i') }}</span>
+                                <span class="d-block"><strong>Fecha:</strong> {{ $lastMedication->administration_date->timezone('America/Bogota')->format('Y-m-d H:i') }}</span>
+
 
                             @else
                                 <em class="text-muted">No administrada</em>

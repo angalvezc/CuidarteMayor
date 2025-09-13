@@ -7,7 +7,6 @@
     <h2>Editar Historial Médico</h2>
 
     <form action="{{ route('health_records.update', $healthRecord->id) }}" method="POST">
-
         @csrf
         @method('PUT')
 

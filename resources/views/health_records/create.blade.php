@@ -30,10 +30,10 @@
             <input type="text" id="resident_name" class="form-control" disabled>
         </div>
 
-        {{-- Campo oculto --}}
-        <input type="hidden" name="resident_id" id="resident_id">
+        {{-- Campo oculto para enviar resident_id --}}
+        <input type="hidden" name="resident_id" id="resident_id" required>
 
-        {{-- Resto de campos... (doctor_id, diagnosis, treatment, record_date) --}}
+        {{-- Selección de doctor --}}
         <div class="mb-3">
             <label for="doctor_id" class="form-label">Doctor</label>
             <select name="doctor_id" id="doctor_id" class="form-select" required>
@@ -59,22 +59,29 @@
             <input type="date" name="record_date" id="record_date" class="form-control" value="{{ date('Y-m-d') }}" required>
         </div>
 
-        <button type="submit" class="btn btn-success" id="submitBtn">Guardar</button>
+        <button type="submit" class="btn btn-success" id="submitBtn" disabled>Guardar</button>
         <a href="{{ route('health_records.index') }}" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
 
-{{-- Script AJAX mejorado --}}
+{{-- Script AJAX para obtener residente por DNI --}}
 <script>
-document.getElementById('dni').addEventListener('blur', function() {
-    let dni = this.value;
-    if (dni) {
+document.addEventListener('DOMContentLoaded', function() {
+    const dniInput = document.getElementById('dni');
+    const residentNameInput = document.getElementById('resident_name');
+    const residentIdInput = document.getElementById('resident_id');
+    const submitBtn = document.getElementById('submitBtn');
+
+    dniInput.addEventListener('blur', function() {
+        const dni = this.value.trim();
+        if (!dni) return;
+
         fetch(`/residents/search/${dni}`)
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    document.getElementById('resident_name').value = data.resident.name;
-                    document.getElementById('resident_id').value = data.resident.id;
+                    residentNameInput.value = data.resident.name;
+                    residentIdInput.value = data.resident.id;
 
                     // Verificar si ya existe historial
                     fetch(`/health-records/check/${data.resident.id}`)
@@ -82,22 +89,36 @@ document.getElementById('dni').addEventListener('blur', function() {
                         .then(checkData => {
                             if (checkData.exists) {
                                 alert('Este residente ya tiene un historial médico registrado. No se puede crear otro.');
-                                document.getElementById('submitBtn').disabled = true;
-                                document.getElementById('submitBtn').textContent = 'Ya Registrado';
+                                submitBtn.disabled = true;
+                                submitBtn.textContent = 'Ya Registrado';
                             } else {
-                                document.getElementById('submitBtn').disabled = false;
-                                document.getElementById('submitBtn').textContent = 'Guardar';
+                                submitBtn.disabled = false;
+                                submitBtn.textContent = 'Guardar';
                             }
                         });
                 } else {
                     alert('No se encontró un residente con ese DNI');
-                    document.getElementById('resident_name').value = '';
-                    document.getElementById('resident_id').value = '';
-                    document.getElementById('submitBtn').disabled = true;
+                    residentNameInput.value = '';
+                    residentIdInput.value = '';
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Guardar';
                 }
             })
-            .catch(error => console.error('Error:', error));
-    }
+            .catch(error => {
+                console.error('Error:', error);
+                residentNameInput.value = '';
+                residentIdInput.value = '';
+                submitBtn.disabled = true;
+            });
+    });
+
+    // Validar antes de enviar el formulario
+    document.getElementById('healthForm').addEventListener('submit', function(e) {
+        if (!residentIdInput.value) {
+            e.preventDefault();
+            alert('Por favor ingrese un DNI válido y seleccione un residente.');
+        }
+    });
 });
 </script>
 @endsection
