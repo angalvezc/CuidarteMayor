@@ -14,7 +14,7 @@
         {{-- Navbar --}}
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
-                <a class="navbar-brand fw-bold" href="#">Sistema Ancianato</a>
+                <a class="navbar-brand fw-bold" href="#">Sistema CuidarteMayor</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -40,7 +40,7 @@
 
     {{-- Footer --}}
     <footer class="bg-dark text-white text-center py-3 mt-auto">
-        <small>&copy; {{ date('Y') }} Sistema de Gestión del Ancianato</small>
+        <small>&copy; {{ date('Y') }} Sistema CuidarteMayor</small>
     </footer>
 
     {{-- Scripts --}}
