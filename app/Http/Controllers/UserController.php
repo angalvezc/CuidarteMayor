@@ -68,16 +68,18 @@ class UserController extends Controller
     // UserController.php
     public function searchByDni($dni)
     {
-        $user = \App\Models\User::where('dni', $dni)->first();
+        $user = User::where('dni', $dni)->first();
 
         if ($user) {
             return response()->json([
                 'success' => true,
+                'id' => $user->id,
                 'name' => $user->name
             ]);
         }
 
         return response()->json(['success' => false]);
     }
+
 
 }

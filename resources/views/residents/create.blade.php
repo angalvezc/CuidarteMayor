@@ -52,13 +52,11 @@
             <input type="text" class="form-control" id="mood" name="mood">
         </div>
 
-        {{-- NUEVO: Campo de DNI para Contacto --}}
-        {{-- Campo de DNI para Contacto --}}
+        {{-- Campo de DNI del contacto --}}
         <div class="mb-3">
             <label for="contact_user_dni" class="form-label">DNI / Cédula del contacto</label>
             <input type="text" class="form-control" id="contact_user_dni" name="contact_user_dni"
-                placeholder="Ingrese el DNI del familiar"
-                value="{{ old('contact_user_dni') }}">
+                placeholder="Ingrese el DNI del familiar" value="{{ old('contact_user_dni') }}">
         </div>
 
         {{-- Input deshabilitado para mostrar nombre del contacto --}}
@@ -66,6 +64,9 @@
             <label for="contact_user_name" class="form-label">Nombre del contacto</label>
             <input type="text" class="form-control" id="contact_user_name" disabled>
         </div>
+
+        {{-- Campo hidden para enviar el ID del contacto --}}
+        <input type="hidden" name="contact_user_id" id="contact_user_id">
 
         {{-- Tipo de relación --}}
         <div class="mb-3">
@@ -90,10 +91,12 @@
 document.addEventListener('DOMContentLoaded', function() {
     const dniInput = document.getElementById('contact_user_dni');
     const nameInput = document.getElementById('contact_user_name');
+    const contactIdInput = document.getElementById('contact_user_id');
 
-    function fetchContactName(dni) {
+    function fetchContact(dni) {
         if(dni.length === 0){
             nameInput.value = '';
+            contactIdInput.value = '';
             return;
         }
 
@@ -102,26 +105,26 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if(data.success){
                     nameInput.value = data.name;
+                    contactIdInput.value = data.id;
                 } else {
                     nameInput.value = 'No encontrado';
+                    contactIdInput.value = '';
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
                 nameInput.value = '';
+                contactIdInput.value = '';
             });
     }
 
-    // Buscar nombre al escribir en el input
     dniInput.addEventListener('input', function() {
-        fetchContactName(this.value.trim());
+        fetchContact(this.value.trim());
     });
 
-    // Si ya hay un valor al cargar la página
     if(dniInput.value.trim() !== ''){
-        fetchContactName(dniInput.value.trim());
+        fetchContact(dniInput.value.trim());
     }
 });
 </script>
-
 @endsection

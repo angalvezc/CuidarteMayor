@@ -41,17 +41,21 @@ Route::middleware('auth', 'role:admin')->group(function () {
 /**
  * RESIDENTS
  */
-Route::middleware('auth', 'role:enfermerx|admin')->group(function () {
+Route::middleware('auth', 'role:enfermerx|admin|doctor')->group(function () {
     Route::get('/residents', [ResidentController::class, 'index'])->name('residents.index');
+
+    Route::get('/residents/search/{dni}', [App\Http\Controllers\ResidentController::class, 'searchByDni']);
+    Route::get('/users/search-by-dni/{dni}', [UserController::class, 'searchByDni']);
+
+});
+Route::middleware('auth', 'role:admin')->group(function () {
     Route::get('/residents/create', [ResidentController::class, 'create'])->name('residents.create');
     Route::post('/residents', [ResidentController::class, 'store'])->name('residents.store');
     Route::get('/residents/{resident}', [ResidentController::class, 'show'])->name('residents.show');
     Route::get('/residents/{resident}/edit', [ResidentController::class, 'edit'])->name('residents.edit');
     Route::put('/residents/{resident}', [ResidentController::class, 'update'])->name('residents.update');
     Route::delete('/residents/{resident}', [ResidentController::class, 'destroy'])->name('residents.destroy');
-    Route::get('/residents/search/{dni}', [App\Http\Controllers\ResidentController::class, 'searchByDni']);
 });
-
 /**
  * HEALTH RECORDS
  */
@@ -70,7 +74,7 @@ Route::middleware('auth', 'role:doctor')->group(function () {
     } else {
         return response()->json(['success' => false]);
     }
-});
+    });
 
 
     // Health Records

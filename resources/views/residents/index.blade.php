@@ -4,9 +4,13 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="mb-0">Lista de Residentes</h2>
-        <a href="{{ route('residents.create') }}" class="btn btn-success shadow-sm">
-            <i class="bi bi-person-plus"></i> Crear Residente
-        </a>
+
+        {{-- Botón Crear solo visible para admin --}}
+        @if(auth()->user()->role->name === 'Admin')
+            <a href="{{ route('residents.create') }}" class="btn btn-success shadow-sm">
+                <i class="bi bi-person-plus"></i> Crear Residente
+            </a>
+        @endif
     </div>
 
     {{-- Formulario de búsqueda por DNI --}}
@@ -55,15 +59,24 @@
                     <td>{{ $resident->contact_relation ?? 'N/A' }}</td>
                     <td>{{ $resident->contactUser?->phone ?? 'N/A' }}</td>
                     <td class="text-center">
-                        <a href="{{ route('residents.edit', $resident) }}" class="btn btn-primary btn-sm mb-1">
-                            <i class="bi bi-pencil-square"></i> Editar
-                        </a>
-                        <form action="{{ route('residents.destroy', $resident) }}" method="POST" style="display:inline-block;">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Seguro que deseas eliminar este residente?')">
-                                <i class="bi bi-trash"></i> Eliminar
-                            </button>
-                        </form>
+
+                        {{-- Botón Editar solo visible para admin --}}
+                        @if(auth()->user()->role->name === 'Admin')
+                            <a href="{{ route('residents.edit', $resident) }}" class="btn btn-primary btn-sm mb-1">
+                                <i class="bi bi-pencil-square"></i> Editar
+                            </a>
+                        @endif
+
+                        {{-- Botón Eliminar solo visible para admin --}}
+                        @if(auth()->user()->role->name === 'Admin')
+                            <form action="{{ route('residents.destroy', $resident) }}" method="POST" style="display:inline-block;">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Seguro que deseas eliminar este residente?')">
+                                    <i class="bi bi-trash"></i> Eliminar
+                                </button>
+                            </form>
+                        @endif
+
                     </td>
                 </tr>
             @empty
