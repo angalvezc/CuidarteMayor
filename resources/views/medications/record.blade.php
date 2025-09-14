@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container mt-4">
-    <h2 class="mb-4">Dosis de {{ $record->resident->name }} (DNI: {{ $record->resident->dni }})</h2>
+    <h2 class="mb-4">Dosis de {{ $record->resident->name }} (Documento: {{ $record->resident->dni }})</h2>
 
     <a href="{{ route('medications.index') }}" class="btn btn-secondary mb-3">Volver</a>
 
