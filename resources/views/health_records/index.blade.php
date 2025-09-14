@@ -47,11 +47,15 @@
                     <td>{{ $record->record_date }}</td>
                     <td>
                         <a href="{{ route('health_records.edit', $record->id) }}" class="btn btn-warning btn-sm">Actualizar</a>
-                        <form action="{{ route('health_records.destroy', $record->id) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Seguro de eliminar este registro?')">Eliminar</button>
-                        </form>
+
+                        {{-- Solo admin puede eliminar --}}
+                        @if(auth()->user()->role->name === 'admin')
+                            <form action="{{ route('health_records.destroy', $record->id) }}" method="POST" class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Seguro de eliminar este registro?')">Eliminar</button>
+                            </form>
+                        @endif
                     </td>
                 </tr>
             @empty

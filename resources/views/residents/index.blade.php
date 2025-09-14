@@ -61,14 +61,14 @@
                     <td class="text-center">
 
                         {{-- Botón Editar solo visible para admin --}}
-                        @if(auth()->user()->role->name === 'Admin')
+                        @if(auth()->user()->role->name === 'admin')
                             <a href="{{ route('residents.edit', $resident) }}" class="btn btn-primary btn-sm mb-1">
                                 <i class="bi bi-pencil-square"></i> Editar
                             </a>
                         @endif
 
                         {{-- Botón Eliminar solo visible para admin --}}
-                        @if(auth()->user()->role->name === 'Admin')
+                        @if(auth()->user()->role->name === 'admin')
                             <form action="{{ route('residents.destroy', $resident) }}" method="POST" style="display:inline-block;">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Seguro que deseas eliminar este residente?')">

@@ -75,7 +75,7 @@ class HealthRecordController extends Controller
 
         $healthRecord->update([
             'resident_id' => $request->resident_id,
-            'doctor_id'   => $healthRecord->doctor_id, // <-- mantener el doctor original
+            'doctor_id' => auth()->id(), // <-- mantener el doctor original
             'diagnosis'   => $request->diagnosis,
             'treatment'   => $request->treatment,
             'record_date' => now(),

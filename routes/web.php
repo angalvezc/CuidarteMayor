@@ -59,7 +59,7 @@ Route::middleware('auth', 'role:admin')->group(function () {
 /**
  * HEALTH RECORDS
  */
-Route::middleware('auth', 'role:doctor')->group(function () {
+Route::middleware('auth', 'role:doctor|admin')->group(function () {
     // Verifica si el residente ya tiene historial
     Route::get('/health-records/check/{resident}', function ($resident) {
         $exists = \App\Models\HealthRecord::where('resident_id', $resident)->exists();
@@ -84,13 +84,15 @@ Route::middleware('auth', 'role:doctor')->group(function () {
     Route::get('/health-records/{healthRecord}', [\App\Http\Controllers\HealthRecordController::class, 'show'])->name('health_records.show');
     Route::get('/health-records/{healthRecord}/edit', [\App\Http\Controllers\HealthRecordController::class, 'edit'])->name('health_records.edit');
     Route::put('/health-records/{healthRecord}', [\App\Http\Controllers\HealthRecordController::class, 'update'])->name('health_records.update');
+
+});
+Route::middleware('auth', 'role:admin')->group(function () {
     Route::delete('/health-records/{healthRecord}', [\App\Http\Controllers\HealthRecordController::class, 'destroy'])->name('health_records.destroy');
 });
-
 /**
  * MEDICATIONS
  */
-Route::middleware('auth', 'role:enfermerx|doctor')->group(function () {
+Route::middleware('auth', 'role:enfermerx|doctor|admin')->group(function () {
     Route::resource('medications', MedicationController::class);
     // Mostrar todas las dosis de un registro de salud
     Route::get('medications/record/{healthRecord}', [MedicationController::class, 'showRecord'])->name('medications.record');
