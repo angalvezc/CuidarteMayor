@@ -58,13 +58,26 @@ class UserController extends Controller
         return redirect()->route('users.index');
     }
 
-    public function destroy(string $id)
+    public function destroy(User $user)
     {
-        $user = User::findOrFail($id);
+        // Validar si el usuario está asociado como doctor en health_records
+        if ($user->healthRecords()->exists()) {
+            return redirect()->route('users.index')
+                ->with('error', 'No se puede eliminar: el usuario está asociado como doctor en registros médicos.');
+        }
+
+        // Validar si el usuario está asociado como contacto de algún residente
+        if ($user->residents()->exists()) {
+            return redirect()->route('users.index')
+                ->with('error', 'No se puede eliminar: el usuario está asociado como contacto de un residente.');
+        }
+
         $user->delete();
 
-        return redirect()->route('users.index');
+        return redirect()->route('users.index')
+            ->with('success', 'Usuario eliminado correctamente.');
     }
+
     // UserController.php
     public function searchByDni($dni)
     {

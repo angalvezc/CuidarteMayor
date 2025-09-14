@@ -6,12 +6,27 @@
         <h2 class="mb-0">Lista de Residentes</h2>
 
         {{-- Botón Crear solo visible para admin --}}
-        @if(auth()->user()->role->name === 'Admin')
+        @if(auth()->user()->role->name === 'admin')
             <a href="{{ route('residents.create') }}" class="btn btn-success shadow-sm">
                 <i class="bi bi-person-plus"></i> Crear Residente
             </a>
         @endif
     </div>
+
+    {{-- Mensajes de éxito o error --}}
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-check-circle"></i> {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-exclamation-triangle"></i> {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    @endif
 
     {{-- Formulario de búsqueda por DNI --}}
     <form action="{{ route('residents.index') }}" method="GET" class="mb-3 shadow-sm p-3 rounded bg-light">

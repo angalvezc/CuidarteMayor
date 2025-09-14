@@ -18,10 +18,13 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ResidentController;
 use App\Http\Controllers\HealthRecordController;
 use App\Http\Controllers\MedicationController;
-use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\VisitController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\Auth\LoginController;
+
+Route::get('/', function () {
+    return redirect()->route('login');
+});
 /**
  * USERS
  */
@@ -113,13 +116,18 @@ Route::middleware('auth', 'role:enfermerx|doctor|admin')->group(function () {
 /**
  * VISITS
  */
-Route::get('/visits', [VisitController::class, 'index'])->name('visits.index');
-Route::get('/visits/create', [VisitController::class, 'create'])->name('visits.create');
-Route::post('/visits', [VisitController::class, 'store'])->name('visits.store');
-Route::get('/visits/{visit}', [VisitController::class, 'show'])->name('visits.show');
-Route::get('/visits/{visit}/edit', [VisitController::class, 'edit'])->name('visits.edit');
-Route::put('/visits/{visit}', [VisitController::class, 'update'])->name('visits.update');
-Route::delete('/visits/{visit}', [VisitController::class, 'destroy'])->name('visits.destroy');
+Route::middleware('auth', 'role:admin|enfermerx')->group(function () {
+    Route::get('/visits', [VisitController::class, 'index'])->name('visits.index');
+    Route::get('/visits/create', [VisitController::class, 'create'])->name('visits.create');
+    Route::post('/visits', [VisitController::class, 'store'])->name('visits.store');
+    Route::get('/visits/{visit}', [VisitController::class, 'show'])->name('visits.show');
+    Route::get('/visits/{visit}/edit', [VisitController::class, 'edit'])->name('visits.edit');
+    Route::put('/visits/{visit}', [VisitController::class, 'update'])->name('visits.update');
+    Route::delete('/visits/{visit}', [VisitController::class, 'destroy'])->name('visits.destroy');
+    Route::post('/visits/find-resident', [VisitController::class, 'findResidentByDni'])->name('visits.findResident');
+    Route::post('/visits/find-user', [VisitController::class, 'findUserByDni'])->name('visits.findUser');
+});
+
 
 /**
  * ROLES

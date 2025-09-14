@@ -100,13 +100,25 @@ class ResidentController extends Controller
     }
 
 
-    public function destroy(string $id)
+    public function destroy(Resident $resident)
     {
-        $resident = Resident::findOrFail($id);
+        if ($resident->healthRecords()->exists()) {
+            return redirect()->route('residents.index')
+                ->with('error', 'No se puede eliminar: el residente tiene registros médicos asociados.');
+        }
+
+        if ($resident->visits()->exists()) {
+            return redirect()->route('residents.index')
+                ->with('error', 'No se puede eliminar: el residente tiene visitas registradas.');
+        }
+
         $resident->delete();
 
-        return redirect()->route('residents.index');
+        return redirect()->route('residents.index')
+            ->with('success', 'Residente eliminado correctamente.');
     }
+
+
 
 
 
