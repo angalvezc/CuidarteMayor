@@ -11,7 +11,7 @@
             <form action="{{ route('users.store') }}" method="POST">
                 @csrf
                 <div class="mb-3">
-                    <label for="dni" class="form-label">DNI / Cédula</label>
+                    <label for="dni" class="form-label">Documento de usuario</label>
                     <input type="text" name="dni" id="dni" class="form-control" required>
                 </div>
 

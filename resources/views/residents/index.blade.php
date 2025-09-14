@@ -50,7 +50,7 @@
             <thead class="table-dark text-center">
                 <tr>
                     <th>ID</th>
-                    <th># Identificación</th>
+                    <th>Documento</th>
                     <th>Nombre</th>
                     <th>Fecha de Nacimiento</th>
                     <th>Género</th>

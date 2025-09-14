@@ -13,7 +13,7 @@
     <form action="{{ route('residents.store') }}" method="POST" id="createResidentForm">
         @csrf
         <div class="mb-3">
-            <label for="dni" class="form-label">DNI / Cédula</label>
+            <label for="dni" class="form-label">Documento Residente</label>
             <input type="text" name="dni" id="dni" class="form-control" required>
         </div>
 
@@ -54,9 +54,9 @@
 
         {{-- Campo de DNI del contacto --}}
         <div class="mb-3">
-            <label for="contact_user_dni" class="form-label">DNI / Cédula del contacto</label>
+            <label for="contact_user_dni" class="form-label">Documento del contacto</label>
             <input type="text" class="form-control" id="contact_user_dni" name="contact_user_dni"
-                placeholder="Ingrese el DNI del familiar" value="{{ old('contact_user_dni') }}">
+                placeholder="Ingrese el Documento del familiar" value="{{ old('contact_user_dni') }}">
         </div>
 
         {{-- Input deshabilitado para mostrar nombre del contacto --}}

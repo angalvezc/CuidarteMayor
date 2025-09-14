@@ -21,8 +21,8 @@
 
         {{-- Buscar residente por DNI --}}
         <div class="mb-3">
-            <label for="dni" class="form-label">DNI del Residente</label>
-            <input type="text" id="dni" name="dni" class="form-control" placeholder="Ingrese DNI del residente" required>
+            <label for="dni" class="form-label">Documento del Residente</label>
+            <input type="text" id="dni" name="dni" class="form-control" placeholder="Ingrese Documento del residente" required>
         </div>
 
         <div class="mb-3">

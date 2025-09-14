@@ -27,7 +27,7 @@
             <tr>
                 <th>ID</th>
                 <th>Residente</th>
-                <th>DNI</th>
+                <th>Documento</th>
                 <th>Doctor</th>
                 <th>Diagnóstico</th>
                 <th>Tratamiento</th>
