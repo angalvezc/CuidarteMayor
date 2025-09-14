@@ -34,22 +34,31 @@ class MedicationController extends Controller
     {
         $request->validate([
             'health_record_id' => 'required|exists:health_records,id',
-            'medication_name'  => 'nullable|string|max:255', // Opcional
-            'dosage'           => 'required|string|max:255',
-            'instructions'     => 'required|string',
+            'medication_name' => 'required|string',
+            'dosage' => 'required|string',
+            'instructions' => 'required|string',
+            'resident_mood' => 'nullable|string',
         ]);
 
-        Medication::create([
-            'health_record_id'   => $request->health_record_id,
-            'user_id'            => Auth::id(),
-            'name'               => $request->medication_name ?? 'Dosis administrada',
-            'dosage'             => $request->dosage,
-            'instructions'       => $request->instructions,
-            'administration_date'=> now(),
-        ]);
+        $healthRecord = HealthRecord::findOrFail($request->health_record_id);
 
-        return redirect()->back()->with('success', 'Dosis registrada correctamente.');
+        // Crear la dosis
+        $medication = new Medication();
+        $medication->health_record_id = $healthRecord->id;
+        $medication->user_id = auth()->id();
+        $medication->name = $request->medication_name;
+        $medication->dosage = $request->dosage;
+        $medication->instructions = $request->instructions;
+        $medication->administration_date = now();
+        $medication->save();
+
+        // Actualizar el estado de ánimo del residente
+        $healthRecord->resident->mood = $request->resident_mood;
+        $healthRecord->resident->save();
+
+        return redirect()->back()->with('success', 'Dosis registrada y estado de ánimo actualizado.');
     }
+
 
     public function complete($healthRecordId)
     {

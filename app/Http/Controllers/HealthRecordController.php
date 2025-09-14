@@ -40,22 +40,31 @@ class HealthRecordController extends Controller
             'diagnosis' => 'required|string',
             'treatment' => 'nullable|string',
             'record_date' => 'required|date',
+            'allergies' => 'nullable|string', // <-- validar alergias
         ]);
 
         if (HealthRecord::where('resident_id', $request->resident_id)->exists()) {
             return back()->withErrors(['resident_id' => 'Este residente ya tiene un historial médico registrado.']);
         }
 
+        // Crear historial médico
         HealthRecord::create([
             'resident_id' => $request->resident_id,
-            'doctor_id'   => Auth::id(), // <-- doctor logueado
+            'doctor_id'   => Auth::id(), // doctor logueado
             'diagnosis'   => $request->diagnosis,
             'treatment'   => $request->treatment,
             'record_date' => now(),
         ]);
 
-        return redirect()->route('health_records.index')->with('success', 'Historial registrado.');
+        // Actualizar alergia del residente
+        $resident = Resident::find($request->resident_id);
+        $resident->update([
+            'allergies' => $request->allergies,
+        ]);
+
+        return redirect()->route('health_records.index')->with('success', 'Historial registrado correctamente.');
     }
+
 
     public function edit(HealthRecord $healthRecord)
     {
@@ -70,19 +79,27 @@ class HealthRecordController extends Controller
             'resident_id' => 'required|exists:residents,id',
             'diagnosis'   => 'required|string',
             'treatment'   => 'nullable|string',
+            'alergies'    => 'nullable|string', // validar alergias
             'record_date' => 'required|date',
         ]);
 
+        // Actualizar historial médico
         $healthRecord->update([
             'resident_id' => $request->resident_id,
-            'doctor_id' => auth()->id(), // <-- mantener el doctor original
+            'doctor_id'   => auth()->id(), // ahora se guarda el doctor que edita
             'diagnosis'   => $request->diagnosis,
             'treatment'   => $request->treatment,
             'record_date' => now(),
         ]);
 
-        return redirect()->route('health_records.index')->with('success', 'Historial actualizado.');
+        // Actualizar alergias del residente
+        $healthRecord->resident->update([
+            'allergies' => $request->alergies,
+        ]);
+
+        return redirect()->route('health_records.index')->with('success', 'Historial actualizado correctamente.');
     }
+
 
     public function destroy(string $id)
     {

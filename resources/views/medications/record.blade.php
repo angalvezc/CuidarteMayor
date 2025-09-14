@@ -16,6 +16,7 @@
                     <th>Medicamento</th>
                     <th>Dosis</th>
                     <th>Instrucciones</th>
+                    <th>Estado de ánimo</th>
                     <th>Fecha</th>
                     <th>Acción</th>
                 </tr>
@@ -26,11 +27,10 @@
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $med->user->name ?? 'N/A' }}</td>
                         <td>{{ $med->name }}</td>
-
                         <td>{{ $med->dosage ?? '-' }}</td>
                         <td>{{ $med->instructions ?? '-' }}</td>
+                        <td>{{ $med->healthRecord->resident->mood ?? '-' }}</td>
                         <td>{{ $med->administration_date->format('d/m/Y H:i') }}</td>
-
                         <td>
                             <!-- Botón editar -->
                             <button class="btn btn-sm btn-warning" type="button" data-bs-toggle="collapse" data-bs-target="#editForm{{ $med->id }}">
@@ -47,6 +47,9 @@
                                     <div class="mb-2">
                                         <textarea name="instructions" class="form-control form-control-sm" rows="2" required>{{ $med->instructions }}</textarea>
                                     </div>
+                                    <div class="mb-2">
+                                        <input type="text" name="resident_mood" class="form-control form-control-sm" placeholder="Estado de ánimo del residente" value="{{ $med->healthRecord->resident->mood }}">
+                                    </div>
                                     <button type="submit" class="btn btn-success btn-sm w-100">Actualizar</button>
                                 </form>
                             </div>
@@ -54,7 +57,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="text-center text-muted">No hay dosis registradas</td>
+                        <td colspan="8" class="text-center text-muted">No hay dosis registradas</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -69,13 +72,16 @@
             <input type="hidden" name="health_record_id" value="{{ $record->id }}">
 
             <div class="mb-2">
-                <input type="text" name="medication_name" class="form-control form-control-sm" placeholder="Nombre del medicamento">
+                <input type="text" name="medication_name" class="form-control form-control-sm" placeholder="Nombre del medicamento" required>
             </div>
             <div class="mb-2">
                 <input type="text" name="dosage" class="form-control form-control-sm" placeholder="Dosis" required>
             </div>
             <div class="mb-2">
                 <textarea name="instructions" class="form-control form-control-sm" placeholder="Instrucciones" rows="2" required></textarea>
+            </div>
+            <div class="mb-2">
+                <input type="text" name="resident_mood" class="form-control form-control-sm" placeholder="Estado de ánimo del residente" value="{{ $record->resident->mood }}">
             </div>
             <button type="submit" class="btn btn-primary btn-sm w-100">Registrar</button>
         </form>

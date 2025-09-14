@@ -33,6 +33,12 @@
         {{-- Campo oculto para enviar resident_id --}}
         <input type="hidden" name="resident_id" id="resident_id" required>
 
+        {{-- Campo para alergias del residente --}}
+        <div class="mb-3">
+            <label for="allergies" class="form-label">Alergias</label>
+            <input type="text" name="allergies" id="allergies" class="form-control" placeholder="Alergias del residente">
+        </div>
+
         {{-- Campo oculto para asignar el doctor logueado automáticamente --}}
         <input type="hidden" name="doctor_id" value="{{ Auth::id() }}">
 
@@ -46,12 +52,8 @@
             <textarea name="treatment" id="treatment" class="form-control" rows="3"></textarea>
         </div>
 
-
         {{-- Campo oculto opcional --}}
         <input type="hidden" name="record_date" value="{{ now() }}">
-
-
-
 
         <button type="submit" class="btn btn-success" id="submitBtn" disabled>Guardar</button>
         <a href="{{ route('health_records.index') }}" class="btn btn-secondary">Cancelar</a>
@@ -64,6 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const dniInput = document.getElementById('dni');
     const residentNameInput = document.getElementById('resident_name');
     const residentIdInput = document.getElementById('resident_id');
+    const allergiesInput = document.getElementById('allergies');
     const submitBtn = document.getElementById('submitBtn');
 
     dniInput.addEventListener('blur', function() {
@@ -76,6 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.success) {
                     residentNameInput.value = data.resident.name;
                     residentIdInput.value = data.resident.id;
+                    allergiesInput.value = data.resident.allergies ?? '';
 
                     fetch(`/health-records/check/${data.resident.id}`)
                         .then(res => res.json())
@@ -93,6 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     alert('No se encontró un residente con ese DNI');
                     residentNameInput.value = '';
                     residentIdInput.value = '';
+                    allergiesInput.value = '';
                     submitBtn.disabled = true;
                     submitBtn.textContent = 'Guardar';
                 }
@@ -101,6 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Error:', error);
                 residentNameInput.value = '';
                 residentIdInput.value = '';
+                allergiesInput.value = '';
                 submitBtn.disabled = true;
             });
     });
