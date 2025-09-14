@@ -30,14 +30,6 @@ class ResidentController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'dni' => 'required|unique:residents,dni',
-            'name' => 'required|string',
-            'birth_date' => 'required|date',
-            'gender' => 'required|in:Masculino,Femenino,Otro',
-            'contact_user_id' => 'nullable|exists:users,id',
-            'contact_relation' => 'nullable|string',
-        ]);
         $resident = new Resident();
         $resident->dni = $request->dni;
         $resident->name = $request->name;
@@ -46,12 +38,23 @@ class ResidentController extends Controller
         $resident->medical_history = $request->medical_history;
         $resident->allergies = $request->allergies;
         $resident->mood = $request->mood;
-        $resident->contact_user_id = $request->contact_user_id;
+
+        // Buscar usuario por DNI
+        $contactUser = null;
+        if ($request->contact_user_dni) {
+            $contactUser = User::where('dni', $request->contact_user_dni)->first();
+        }
+
+        // Guardar solo el ID en la tabla residents
+        $resident->contact_user_id = $contactUser ? $contactUser->id : null;
         $resident->contact_relation = $request->contact_relation;
+
         $resident->save();
 
-        return redirect()->route('residents.index')->with('success', 'Residente creado correctamente.');
+        return redirect()->route('residents.index')->with('success', 'Residente creado correctamente');
     }
+
+
 
     public function edit(string $id)
     {
@@ -81,6 +84,7 @@ class ResidentController extends Controller
         $resident->mood = $request->mood;
         $resident->contact_user_id = $request->contact_user_id;
         $resident->contact_relation = $request->contact_relation; // ← nuevo
+
         $resident->save();
 
         return redirect()->route('residents.index')->with('success', 'Residente actualizado correctamente.');

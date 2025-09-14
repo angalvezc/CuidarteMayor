@@ -21,6 +21,7 @@ return new class extends Migration
             $table->text('medical_history')->nullable();
             $table->string('allergies')->nullable();
             $table->string('mood')->nullable();
+            
             $table->unsignedBigInteger('contact_user_id')->nullable();
             $table->foreign('contact_user_id')->references('id')->on('users');
             $table->timestamps();

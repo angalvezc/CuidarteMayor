@@ -10,7 +10,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        
+
         $users = User::with('role')->get();
         return view('users.index', compact('users'));
     }
@@ -65,4 +65,19 @@ class UserController extends Controller
 
         return redirect()->route('users.index');
     }
+    // UserController.php
+    public function searchByDni($dni)
+    {
+        $user = \App\Models\User::where('dni', $dni)->first();
+
+        if ($user) {
+            return response()->json([
+                'success' => true,
+                'name' => $user->name
+            ]);
+        }
+
+        return response()->json(['success' => false]);
+    }
+
 }
